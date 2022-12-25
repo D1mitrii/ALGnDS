@@ -127,6 +127,6 @@ class HashtableGraphics:
         plt.show()
 
 
-#HashtableGraphics.best_case()
+HashtableGraphics.best_case()
 #HashtableGraphics.worst_case()
-HashtableGraphics.average_case()
+#HashtableGraphics.average_case()

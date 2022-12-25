@@ -52,7 +52,9 @@ class Hashtable:
         idx = 0
         i = hash_value
         while True:
-            if self.__array[i] and self.__array[i][0] == key:
+            if not self.__array[i]:
+                raise KeyError("Key not found in hashtable (operation find)")
+            if self.__array[i][0] == key:
                 self.__array[i] = "del"
                 self.__item_count -= 1
                 break
@@ -69,12 +71,13 @@ class Hashtable:
         idx = 0
         i = hash_value
         while True:
-            if self.__array[i] and self.__array[i] != "del" and self.__array[i][0] == key:
+            if not self.__array[i]:
+                raise KeyError("Key not found in hashtable (operation find)")
+            if  self.__array[i] != "del" and self.__array[i][0] == key:
                 return self.__array[i][1]
             idx += 1
             if idx >= self.__MAX_SIZE:
                 raise KeyError("Key not found in hashtable (operation find)")
-                break
             offset = self.__choose_probing(idx, hash_value)
             i = (hash_value + offset) % self.__MAX_SIZE
 
@@ -90,8 +93,8 @@ class Hashtable:
         self.__array += [None for _ in range(self.__MAX_SIZE)]
         self.__MAX_SIZE *= 2
 
-    def __str__(self) -> list:
-        return self.__array
+    def __str__(self) -> str:
+        return self.__array.__str__()
 
     def __len__(self) -> int:
         return self.__item_count
