@@ -4,7 +4,7 @@ from typing import NoReturn, Any, Callable
 class Hashtable:
     def __init__(self, probe="linear"):
         self.__MAX_SIZE = 16384
-        self.fill_factor = 0.75
+        self.__fill_factor = 0.66
         self.__item_count = 0
         self.__probe = probe
         self.__array = [None for _ in range(self.__MAX_SIZE)]
@@ -34,7 +34,7 @@ class Hashtable:
             if self.__array[i] is None or self.__array[i] == "del":
                 self.__array[i] = (key, value)
                 self.__item_count += 1
-                if self.__item_count >= 0.75 * self.__MAX_SIZE:
+                if self.__item_count >= self.__fill_factor * self.__MAX_SIZE:
                     self.__resize()
                 break
             else:
