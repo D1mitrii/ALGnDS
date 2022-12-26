@@ -3,8 +3,7 @@ from typing import NoReturn, Any, Callable
 
 class Hashtable:
     def __init__(self, probe="linear"):
-        self.__MAX_SIZE = 16384
-        self.__fill_factor = 0.66
+        self.__MAX_SIZE = 2 ** 22
         self.__item_count = 0
         self.__probe = probe
         self.__array = [None for _ in range(self.__MAX_SIZE)]
@@ -34,7 +33,7 @@ class Hashtable:
             if self.__array[i] is None or self.__array[i] == "del":
                 self.__array[i] = (key, value)
                 self.__item_count += 1
-                if self.__item_count >= self.__fill_factor * self.__MAX_SIZE:
+                if self.__item_count >= 1 * self.__MAX_SIZE:
                     self.__resize()
                 break
             else:
@@ -53,7 +52,8 @@ class Hashtable:
         i = hash_value
         while True:
             if not self.__array[i]:
-                raise KeyError("Key not found in hashtable (operation find)")
+                return
+                #raise KeyError("Key not found in hashtable (operation find)")
             if self.__array[i][0] == key:
                 self.__array[i] = "del"
                 self.__item_count -= 1
@@ -72,12 +72,14 @@ class Hashtable:
         i = hash_value
         while True:
             if not self.__array[i]:
-                raise KeyError("Key not found in hashtable (operation find)")
-            if  self.__array[i] != "del" and self.__array[i][0] == key:
+                return
+                #raise KeyError("Key not found in hashtable (operation find)")
+            if self.__array[i] != "del" and self.__array[i][0] == key:
                 return self.__array[i][1]
             idx += 1
             if idx >= self.__MAX_SIZE:
-                raise KeyError("Key not found in hashtable (operation find)")
+                return
+                #raise KeyError("Key not found in hashtable (operation find)")
             offset = self.__choose_probing(idx, hash_value)
             i = (hash_value + offset) % self.__MAX_SIZE
 

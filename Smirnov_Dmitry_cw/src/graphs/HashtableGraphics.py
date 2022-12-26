@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from Smirnov_Dmitry_cw.src.module.Hashtable import Hashtable
 
-PROBENAME = "double"
+PROBENAME = "quadratic"
 
 
 class HashtableGraphics:
@@ -16,7 +16,7 @@ class HashtableGraphics:
         times_remove = list()
 
         MAX = 1_000_000
-        dataset = list(range(1, MAX))
+        dataset = list(random.randint(1, MAX) for _ in range(1, MAX))
 
         table = Hashtable(PROBENAME)
         gc.disable()
@@ -33,7 +33,7 @@ class HashtableGraphics:
         gc.enable()
         gc.disable()
         start = time.time_ns()
-        for i in range(1000000-1, 0, -1):
+        for i in dataset:
             table.remove(i)
             times_remove.append(time.time_ns() - start)
         gc.enable()
@@ -93,24 +93,25 @@ class HashtableGraphics:
         times_remove = list()
         MAX = 1_000_000
         table = Hashtable(PROBENAME)
-
+        dataset = list(range(1, MAX))
+        random.shuffle(dataset)
         gc.disable()
         start = time.time_ns()
-        for i in range(1, MAX):
+        for i in dataset:
             table[i] = i
             times_insert.append(time.time_ns() - start)
         gc.enable()
 
         gc.disable()
         start = time.time_ns()
-        for i in range(1, MAX):
+        for i in dataset:
             a = table[i]
             times_get.append(time.time_ns() - start)
         gc.enable()
 
         gc.disable()
         start = time.time_ns()
-        for i in range(1, MAX):
+        for i in dataset:
             table.remove(i)
             times_remove.append(time.time_ns() - start)
         gc.enable()
@@ -127,6 +128,6 @@ class HashtableGraphics:
         plt.show()
 
 
-HashtableGraphics.best_case()
+#HashtableGraphics.best_case()
 #HashtableGraphics.worst_case()
-#HashtableGraphics.average_case()
+HashtableGraphics.average_case()
