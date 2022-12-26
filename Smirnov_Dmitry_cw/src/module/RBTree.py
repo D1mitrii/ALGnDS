@@ -27,23 +27,24 @@ class RBTree:
 
     def __setitem__(self, key: int, value: Any) -> NoReturn:
         node_new = Node(RED, key, value, self.__nil, self.__nil, None)
-        tmp_node = None
-        node = self.__root
-
-        while node != self.__nil:
-            tmp_node = node
-            if node_new.key < node.key:
-                node = node.left
-            else:
-                node = node.right
-
-        node_new.parent = tmp_node
-        if tmp_node is None:
+        if self.__root == self.__nil:
             self.__root = node_new
-        elif node_new.key < tmp_node.key:
-            tmp_node.left = node_new
+            return
+        node = None
+        current = self.__root
+
+        while current != self.__nil:
+            node = current
+            if node_new.key < current.key:
+                current = current.left
+            else:
+                current = current.right
+
+        node_new.parent = node
+        if node_new.key < node.key:
+            node.left = node_new
         else:
-            tmp_node.right = node_new
+            node.right = node_new
 
         if node_new.parent is None:
             node_new.color = BLACK

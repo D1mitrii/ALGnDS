@@ -57,7 +57,7 @@ class Hashtable:
             if self.__array[i][0] == key:
                 self.__array[i] = "del"
                 self.__item_count -= 1
-                break
+                return
             idx += 1
             if idx >= self.__MAX_SIZE:
                 break
