@@ -56,7 +56,7 @@ class Heap:
                 self.__heap[index], self.__heap[minIndex] = self.__heap[minIndex], self.__heap[index]
                 index = minIndex
 
-    def extract_min(self):
+    def extractMin(self):
         """
         Достает минимальеый ставит максимальный на его место и просеивает вниз.
         :return: возвращает минимальный элемент

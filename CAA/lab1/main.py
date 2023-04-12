@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-DEBUG = False
+DEBUG = True
 
 boardSize = 0
 minColor = 0
@@ -74,7 +74,7 @@ def backTracking(board, xStart, yStart, color, squares):
     таким образом развивается это частичное решение. Если вставить нельзя,
     то проверяем количество цветов в раскраске частичного решения если оно меньше минимальной раскраски,
     то сохраняем решение и заменяем минимальную раскраску. В конце цикла уменьшаем первый квадрат,
-    который мы вставили.
+    который мы вставили. Рекурсия завершается когда дошли до квадрата в одну клетку.
     :param board: Двумерный массив.
     :param xStart: Абсцисса ещё не занятой области на столешницу.
     :param yStart: Ордината ещё не занятой области на столешницу.
@@ -105,12 +105,21 @@ def backTracking(board, xStart, yStart, color, squares):
                     break
         # Если нашли снова запускаем бэктрэкинг, но уже с новой координатой и увеличеным на единицу цветом
         if flagFound:
-            if color + 1 != minColor:
+            if color + 1 < minColor:
                 backTracking(board, x, y, color + 1, squares)
+            elif DEBUG:
+                print("Метод ветвей и границ прервал решение:")
+                print(f"Текущий minColor:{minColor}, прерваный: {color+1}")
+                print(squares)
         else:
             # Найдено решение, если оно имеет раскраску меньше текущей минимальной,
             # то сохраняем решение в глобальные переменные
             if color < minColor:
+                if DEBUG:
+                    print("Произошло обновление оптимального решения")
+                    print(f"Прошлый minColor:{minColor}, новый: {color}")
+                    print("Квадраты решения")
+                    print(squares)
                 minColor = color
                 minBoard = deepcopy(board)
                 minSquares = deepcopy(squares)

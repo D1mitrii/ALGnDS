@@ -1,7 +1,7 @@
 import sys
 from binaryHeap import Heap
 
-DEBUG = False
+DEBUG = True
 
 
 def heuristic(currentVertex, endVertex):
@@ -16,7 +16,7 @@ def heuristic(currentVertex, endVertex):
     return abs(ord(endVertex) - ord(currentVertex))
 
 
-def aStarAlgorithm(startVertex, endVertex, graph):
+def aStarAlgorithm(startVertex, endVertex, edges):
     """
     Функция реализует алгоритм A*. Создает словарь расстояний, и словарь корней.
     Создает очередь с приоритетом на куче.
@@ -26,7 +26,7 @@ def aStarAlgorithm(startVertex, endVertex, graph):
     если такую вершину не рассматривали или вес получился более оптимальный  обновляем словари и добавляем в очередь эту вершину.
     :param startVertex: начальная вершина
     :param endVertex: конечная вершина
-    :param graph: словарь ребер графа
+    :param edges: словарь ребер графа
     :return: словарь корней (ключ - куда пришли, значение - откуда)
     """
     global DEBUG
@@ -37,16 +37,18 @@ def aStarAlgorithm(startVertex, endVertex, graph):
         if DEBUG:
             print("Очередь на текущей итеариции имеет вид:")
             print(queue)
-        current = queue.extract_min()[1]
+        current = queue.extractMin()[1]
+        if DEBUG:
+            print(f"Достали из очереди {current}")
         if current == endVertex:
             if DEBUG:
                 print('Дошли до конечной вершины!')
             break
-        if current not in graph:
+        if current not in edges:
             if DEBUG:
                 print(f"Вершина |{current}| является листом графа")
             continue
-        for nextVertex, weight in graph[current]:
+        for nextVertex, weight in edges[current]:
             temp_dist = distances[current] + weight
             if nextVertex not in distances or temp_dist < distances[nextVertex]:
                 roots[nextVertex] = current
