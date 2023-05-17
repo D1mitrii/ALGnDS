@@ -15,6 +15,23 @@ class methodBB:
         self.__recordWeight = math.inf
         self.__DEBUG = DEBUG
 
+    def __findMinCostEdge(self, vertex, remainVertices):
+        """
+        Метод находит минимальное ребро из последней вершины пути к оставшимся вершинам.
+        :param vertex: последняя вершина пути
+        :param remainVertices: вершины ещё не добавленные в путь
+        :return: вес минимального ребра из
+        """
+        if len(remainVertices) == 0:
+            return 0
+        # инициализируем ребро как бесконечность
+        minEdge = math.inf
+        # проходимся по всем ребрам из вершины к оставшимся, если нашли меньше, то меняяем
+        for elem in remainVertices:
+            if self.__matrix[vertex][elem] < minEdge:
+                minEdge = self.__matrix[vertex][elem]
+        return minEdge
+
     def __solve(self, currentPath, currentWeight):
         """
         Рекурсивный метод перебирающий все возможные решение, используется МВиГ
@@ -41,21 +58,31 @@ class methodBB:
                 # если хуже то возращаемся
                 if self.__DEBUG:
                     print(
-                        f"Нашли цепочку c ценой({currentWeight + self.__matrix[currentPath[-1]][self.__startVertex]}):"
+                        f"Нашли цепочку c ценой({currentWeight + self.__matrix[currentPath[-1]][self.__startVertex]}) > рекорда({self.__recordWeight}):"
                         f"\n{'-'.join(self.__strVertexArray(currentPath + [self.__startVertex]))} - она не оптимальная!")
                 return
-        # отсечение ветвей хуже нижней оценки
-        if currentWeight > self.__estimation:
-            if self.__DEBUG:
-                print(f"Нижняя оценка ({self.__estimation}) отсекла путь с весом ({currentWeight}):")
-                print(f"Отсеченный путь {'-'.join(self.__strVertexArray(currentPath))}")
-            return
         # достаем последнюю вершину пути
         lastVertex = currentPath[-1]
         # создаем список ещё не просмотренных вершин
         notViewed = [i for i in range(len(self.__matrix)) if i not in currentPath]
+        # отсечение ветвей хуже текущего рекорда
+        firstEstimation = minWeightEdges(deepcopy(self.__matrix), notViewed.copy())
+        secondEstimation = primFindMST(deepcopy(self.__matrix), notViewed.copy())[1]
+        minBridge = self.__findMinCostEdge(currentPath[-1], notViewed)
         if self.__DEBUG:
-            print(f"Ещё не рассмотренные вершины: {[str(vertex + 1) for vertex in notViewed]}")
+            print("Оценки оставшегося пути:")
+            print(f"\tПо полусумме двух легчайших ребер: {firstEstimation}")
+            print(f"\tПо весу МОД: {secondEstimation}")
+            print(f"\tМинимальное ребро из текущего пути"
+                  f" к оставшимся вершинам: {minBridge}")
+        if currentWeight + minBridge + max(firstEstimation, secondEstimation) > self.__recordWeight:
+            if self.__DEBUG:
+                print(f"Рекорд ({self.__recordWeight}) отсек путь с весом + оценкой"
+                      f"({currentWeight + minBridge + max(firstEstimation, secondEstimation)}):")
+                print(f"Отсеченный путь {'-'.join(self.__strVertexArray(currentPath))}")
+            return
+        if self.__DEBUG:
+            print(f"Ещё не рассмотренные вершины: {self.__strVertexArray(notViewed)}")
         for vertex in notViewed:
             # поочередно добавляем вершины в путь, если в них он есть из последней вершины текущего пути
             if self.__matrix[lastVertex][vertex] != math.inf:
@@ -85,12 +112,6 @@ class methodBB:
         Функция находит нижнюю границу, после чего запускает МВиГ
         :return:возвращает полученный путь и его вес
         """
-        try:
-            # пытаем получить нижнюю границу
-            self.__estimation = primFindMST(deepcopy(self.__matrix), self.__startVertex)[1] + minWeightEdges(
-                deepcopy(self.__matrix))
-        except RuntimeError as e:
-            print(e)
         # запускаем МВиГ
         self.__solve([self.__startVertex], 0)
         return self.__recordPath, self.__recordWeight
