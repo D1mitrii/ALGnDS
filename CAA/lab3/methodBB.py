@@ -48,12 +48,12 @@ class methodBB:
                 # если лучше обновляем рекорд
                 if self.__DEBUG:
                     print(
-                        f"СТАРОЕ оптимальное решиение: cost:{self.__recordWeight}\npath:{'-'.join(self.__strVertexArray(self.__recordPath))}")
+                        f"OLD оптимальное решиение: cost:{self.__recordWeight}\npath:{'-'.join(self.__strVertexArray(self.__recordPath))}")
                 self.__recordWeight = currentWeight + self.__matrix[currentPath[-1]][self.__startVertex]
                 self.__recordPath = currentPath + [self.__startVertex]
                 if self.__DEBUG:
                     print(
-                        f"НОВОЕ оптимальное решиение: cost:{self.__recordWeight}\npath:{'-'.join(self.__strVertexArray(self.__recordPath))}")
+                        f"NEW оптимальное решиение: cost:{self.__recordWeight}\npath:{'-'.join(self.__strVertexArray(self.__recordPath))}")
             else:
                 # если хуже то возращаемся
                 if self.__DEBUG:
@@ -66,19 +66,16 @@ class methodBB:
         # создаем список ещё не просмотренных вершин
         notViewed = [i for i in range(len(self.__matrix)) if i not in currentPath]
         # отсечение ветвей хуже текущего рекорда
-        firstEstimation = minWeightEdges(deepcopy(self.__matrix), notViewed.copy())
-        secondEstimation = primFindMST(deepcopy(self.__matrix), notViewed.copy())[1]
-        minBridge = self.__findMinCostEdge(currentPath[-1], notViewed)
+        minWeightEstimation = minWeightEdges(deepcopy(self.__matrix), [lastVertex] + notViewed.copy())
+        MSTEstimation = primFindMST(deepcopy(self.__matrix), notViewed.copy())[1] + self.__findMinCostEdge(currentPath[-1], notViewed)
         if self.__DEBUG:
             print("Оценки оставшегося пути:")
-            print(f"\tПо полусумме двух легчайших ребер: {firstEstimation}")
-            print(f"\tПо весу МОД: {secondEstimation}")
-            print(f"\tМинимальное ребро из текущего пути"
-                  f" к оставшимся вершинам: {minBridge}")
-        if currentWeight + minBridge + max(firstEstimation, secondEstimation) > self.__recordWeight:
+            print(f"\tПо полусумме двух легчайших ребер: {minWeightEstimation}")
+            print(f"\tПо весу МОД: {MSTEstimation}")
+        if currentWeight + max(minWeightEstimation, MSTEstimation) > self.__recordWeight:
             if self.__DEBUG:
                 print(f"Рекорд ({self.__recordWeight}) отсек путь с весом + оценкой"
-                      f"({currentWeight + minBridge + max(firstEstimation, secondEstimation)}):")
+                      f"({currentWeight + max(minWeightEstimation, MSTEstimation)}):")
                 print(f"Отсеченный путь {'-'.join(self.__strVertexArray(currentPath))}")
             return
         if self.__DEBUG:

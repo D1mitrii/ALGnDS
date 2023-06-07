@@ -13,10 +13,9 @@ def minWeightEdges(matrix, remainVertex):
         return 0
     if len(remainVertex) == 2:
         return (matrix[remainVertex[0]][remainVertex[1]] + matrix[remainVertex[1]][remainVertex[0]]) / 2
-    counter = 0
+    first, second = math.inf, math.inf
     # инициализируем значения как бесконечность
     for i in remainVertex:
-        first, second = math.inf, math.inf
         for j in remainVertex:
             if i == j:
                 continue
@@ -26,8 +25,7 @@ def minWeightEdges(matrix, remainVertex):
                 second, first = first, matrix[i][j]
             elif first < matrix[i][j] < second:  # если найденное меньше только второгу, то перезаписываем второе
                 second = matrix[i][j]
-        counter += (first + second) / 2
-    return counter
+    return (first + second) / 2
 
 
 def main():
